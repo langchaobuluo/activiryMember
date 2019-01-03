@@ -1,0 +1,101 @@
+@charset "utf-8";
+body {
+    font-family: Microsoft Yahei, Helvetica, Arial;
+    padding: 0;
+    box-sizing: border-box;
+    margin: 0 auto;
+    background-image: url("../img/bag.png") ;
+    background-repeat: no-repeat;
+    background-size:100% 100%;
+    background-color: #000;
+}
+
+img {
+    vertical-align: middle
+}
+
+dd, div, dl, dt, footer, h1, h2, h3, h4, h5, h6, header, li, nav, p, section, ul, input {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    list-style: none;
+    box-sizing: border-box
+}
+
+a, button, form, input, textarea {
+    -webkit-tap-highlight-color: rgba(255, 0, 0, 0);
+    text-decoration: none;
+    outline: 0
+}
+
+a {
+    color: #000
+}
+
+::-webkit-input-placeholder {
+    color: #fff
+}
+
+:-moz-placeholder {
+    color: #fff;
+    opacity: 1
+}
+
+::-moz-placeholder {
+    color: #fff;
+    opacity: 1
+}
+
+:-ms-input-placeholder {
+    color: #fff
+}
+
+input {
+    background-color: transparent;
+    color: #fff;
+    font-size: 1rem
+}
+
+img {
+    vertical-align: middle;
+    border: 0 none
+}
+
+@media screen and (min-width: 640px) {
+    body, html {
+        font-size: 20px
+    }
+    .phone-card input{
+        margin-top: .1rem;
+    }
+}
+
+@media screen and (min-width: 500px) and (max-width: 640px) {
+    body, html {
+        font-size: 18px
+    }
+}
+
+@media screen and (min-width: 380px) and (max-width: 500px) {
+    body, html {
+        font-size: 16px
+    }
+}
+
+@media screen and (min-width: 330px) and (max-width: 380px) {
+    body, html {
+        font-size: 15px
+    }
+}
+
+@media screen and (max-width: 320px) {
+    body, html {
+        font-size: 14px
+    }
+}
+
+a, button, input, textarea {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-appearance: none;
+    appearance: none
+}

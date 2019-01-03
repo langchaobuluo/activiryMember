@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="application-name" content="移动版" />
+    <meta http-equiv="Cache-control" content="no-cache" />
+    <title>唱吧麦颂</title>
+    <link rel="stylesheet" href="css/common.css" />
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/mnit.css" />
+    <script src="js/jquery.min.js"></script>
+    <script src="js/vue.min.js"></script>
+    <script src="js/mnit.js"></script>
+  </head>
+
+  <body>
+    <div id="app" class="nomal">
+      <div class="logo">
+        <img class="logo-ms" src="img/logo.png" alt="" />
+        <img class="logo-sougo" src="img/logoInput.png" alt="" />
+      </div>
+      <div class="title-img"><img src="img/title.png" alt="" /></div>
+      <div class="activity-all">
+        <img class="choujiang" src="img/choujiang.png" alt="" />
+        <div class="random-bag">
+          <div v-for="value in imgList" class="random-write">
+            <img class="two" :src="value.image" alt="" v-text="value.id" />
+            <!-- <div class="img-shadow"></div> -->
+            <div
+              :class="num==value.id?'':'img-shadow'"
+              v-show="isGetTest"
+            ></div>
+          </div>
+        </div>
+        <div style="text-align: center;">
+          <img class="boder-two" src="img/lotto.png" alt="" @click="getTest" />
+        </div>
+      </div>
+      <div class="router-btn" @click="guess">
+        <img src="img/activityBtn.png" alt="" />
+      </div>
+      <mt-popup
+        v-model="guessrule_a"
+        position="center"
+        style="width: 86%"
+        :modal="isModel"
+      >
+        <div class="closebtns">
+          <p style="text-align: center">活动规则</p>
+          <img
+            class="close-img"
+            src="img/del.png"
+            @click="closerulebtn"
+            alt=""
+          />
+        </div>
+        <div class="guessruletext_a">
+          <ul>
+            <li class="acti-ruter">活动规则：</li>
+            <li>
+              1、获得奖品后，中奖用户输入手机号进行验证，验证成功后，奖品会以券码形式直接冲入手机账户中；
+            </li>
+            <li>
+              2、关注【唱吧麦颂】微信服务号，进入“首页”-“个人中心”-“优惠券”可查看券码；
+            </li>
+            <li>
+              3、券码支持在线预订使用，预订成功后即为使用，取消订单后券可恢复；
+            </li>
+            <li>4、每个手机号只限一次抽奖机会。</li>
+          </ul>
+          <ul>
+            <li class="acti-ruter">奖品券使用规则：</li>
+            <li>1、1小时/2小时免唱券：</li>
+            <li>
+              ·本券仅限在线预订使用，预订成功后即为使用，取消订单后免唱券可恢复；
+            </li>
+            <li>
+              ·本券仅限唱吧麦颂新注册会员用户使用，若使用此券请关注【唱吧麦颂】微信公众号，进行线上预订；
+            </li>
+            <li>
+              ·本券仅作房时抵用，不可与店内其他优惠同时享用，不叠加、不折现、不找零；
+            </li>
+            <li>·本券不限时段，以预订结果为准。</li>
+            <li>2、50元/100元抵用券：</li>
+            <li>
+              ·本券支持在线预订使用，预订成功后即为使用，取消订单后免唱券可恢复；
+            </li>
+            <li>·本券不可与店内其他优惠同时享用，不可叠加、不折现、不找零。</li>
+            <li>3、通用规则：</li>
+            <li>·本券适用于唱吧麦颂所有在营业店；</li>
+            <li>·使用期限：有效期至2019年3月30日，逾期无效；</li>
+            <li>
+              ·使用限制：2018年12月24日-25日、2018年12月30-31日、2019年1月1日及春节、元宵节、情人节不可用；
+            </li>
+            <li>·具体使用规则，以门店实际公告为准；</li>
+            <li>·唱吧麦颂全国会员服务热线：400-668-9666。</li>
+          </ul>
+        </div>
+      </mt-popup>
+      <div class="popUpBack" v-show="popBack"></div>
+
+      <!-- 登录 -->
+      <mt-popup
+        v-model="login_a"
+        position="center"
+        :class="loginBox"
+        style="width: 86%;height:345px"
+        :modal="isModel"
+      >
+        <div>
+          <h3 class="login-title">恭喜您抽中了优惠券</h3>
+          <p class="login-p">*请输入手机号进行领取</p>
+          <div class="enterphone">
+            <input
+              type="number"
+              maxlength="11"
+              placeholder="请输入手机号"
+              v-model="phoneNum"
+              @blur="blur()"
+            />
+          </div>
+          <div class="logincode">
+            <div class="entercodes">
+              <input
+                type="number"
+                maxlength="6"
+                placeholder="输入验证码"
+                v-model="codeNum"
+                @blur="blur()"
+              />
+              <!-- <button @click="getcodebtn" v-if="disabled">{{codevalue}}</button>
+            <button v-else="">{{codevalue}}</button> -->
+            </div>
+            <button @click="getcodebtn" v-if="disabled">{{ codevalue }}</button>
+            <button @click="getcodebtn" v-else="">{{ codevalue }}</button>
+          </div>
+          <div class="loginto">
+            <div class="logonbtnsings" @click="loginto">确认领取</div>
+          </div>
+          <img class="close-over" @click="overImg" src="img/del.png" alt="" />
+        </div>
+      </mt-popup>
+      <!-- 抵用劵 -->
+      <mt-popup
+        v-model="award"
+        position="center"
+        :modal="isModel"
+        style="width: 86%;height:50%"
+      >
+        <div class="award">
+          <h3 class="award-h">您获得唱吧麦颂</h3>
+          <!-- <img class="award-img" src="img/fivetySong.png" alt=""> -->
+          <img class="award-img" :src="awardPic" alt="" />
+          <!-- <img v-else-if="awardValue == '100元'" class="award-img" src="img/hangSong.png" alt="">
+        <img v-else-if ="awardValue == '1小时'" class = "award-img" src="img/oneSong.png" alt="">
+        <img v-else ="awardValue == '2小时'" class = "award-img" src="img/twoSong.png" alt=""> -->
+          <div class="award-detail">
+            可在唱吧麦颂公众号-我的中心-优惠券里查看
+          </div>
+          <button class="award-cur" @click="awardBtn">确定</button>
+        </div>
+      </mt-popup>
+      <!-- 校验弹框 -->
+      <mt-popup
+        v-model="popup"
+        position="center"
+        :modal="isModel"
+        style=" width: 80%; background: #ffffff;padding: .5rem 0;border-radius: 10px;"
+      >
+        <div class="popup-test">
+          <p>温馨提示 !</p>
+          <p id="popuptest">{{ popuptext }}</p>
+          <p><a href="javascript:;" @click="makesure">确定</a></p>
+        </div>
+      </mt-popup>
+      <!--滑块登录-->
+      <div class="sliderpopup" id="sliderpopup">
+        <div class="sliding" id="getWidth">
+          <div class="cutoutimgs"><img id="targetimgs" alt="" style="" /></div>
+          <!--<div class="imgbox"><img    :src="backimgs" alt=""></div>-->
+          <div class="imgshows" id="imgshows">
+            <img id="cutoutimg" alt="" />
+          </div>
+        </div>
+        <div class="verify-bar">
+          <div
+            @touchend="touchEnd"
+            @touchstart="touchStart"
+            @touchmove="touchMove"
+            class="gorightimgs"
+            id="gorightimg"
+          >
+            <img
+              src="https://mysongimageservice.oss-cn-beijing.aliyuncs.com/static/img/xiaoCx/slidingbtn.png"
+              alt=""
+            />
+          </div>
+          <span id="slidetext">向右滑动获取验证码</span>
+        </div>
+      </div>
+    </div>
+    <script>
+      // var https = "http://192.168.11.201:8011";
+      var https = "https://reservation.mysongktv.com"; //线上
+      //var https = "https://msdemo.mysongktv.com";//线下
+      new Vue({
+        el: "#app",
+        data: {
+          //   image: "img/header.jpg",
+          imgList: [
+            { image: "img/one.png", id: 0 },
+            { image: "img/two.png", id: 1 },
+            { image: "img/fivety.png", id: 2 },
+            { image: "img/hang.png", id: 3 }
+          ],
+          num: 0,
+          guessrule_a: false,
+          login_a: false,
+          phoneNum: "", //手机号
+          codeNum: "", //验证码
+          popup: false, //校验的弹框
+          popuptext: "", //校验的文案
+          codevalue: "获取",
+          currentTime: 61,
+          disabled: true,
+          award: false, //获奖的弹框
+          awardValue: "",
+          localtoken: "", //缓存
+          cutout: "", //图片
+          target: "", //当前的图片
+          y: "", //位置
+          popupSlid: false,
+          toLefts: "",
+          startX: "",
+          isModel: false,
+          popBack: false, //遮罩背景
+          popDoBack: false, //遮罩加一层背景
+          loginBox: "loginBox",
+          isGetTest: false,
+          awardPic: ""
+        },
+        methods: {
+          getTest() {
+            let count = 0;
+            let that = this;
+            that.isGetTest = true;
+            var setTime = setInterval(function() {
+              count++;
+              if (count > 30) {
+                clearInterval(setTime); //是否需要清除a
+                that.getLogin();
+              } else {
+                if (that.num > 2) {
+                  that.num = 0; //that承接
+                } else {
+                  that.num += 1;
+                }
+                var list = [];
+                var listAll = list.push(that.num);
+                console.log(listAll);
+              }
+            }, 100);
+          },
+          time() {
+            if (this.timeNum > 3) {
+              return;
+            } else {
+              this.timeNum += 1;
+            }
+            console.log(123);
+          },
+          closerulebtn() {
+            this.guessrule_a = false;
+            this.popBack = false;
+            this.isGetTest = false;
+          },
+          awardBtn() {
+            this.award = false;
+            this.popBack = false;
+            this.isGetTest = false;
+          },
+          guess() {
+            this.guessrule_a = true;
+            this.popBack = true;
+            console.log(1);
+          },
+          getLogin() {
+            this.login_a = true;
+            this.popBack = true;
+          },
+          overImg() {
+            //关闭按钮
+            this.login_a = false;
+            this.popBack = false;
+            this.isGetTest = false;
+          },
+          blur() {
+            //失去焦点时，卷曲度为0
+            document.body.scrollTop = 0;
+          },
+          makesure: function() {
+            //关闭校验的弹框
+            this.popup = false;
+            //this.popBack = false;
+            $(".popUpBack").css({
+              "z-index": Number($(".loginBox").css("z-index")) - 1
+            });
+          },
+
+          getRandom(num) {
+            this.random = Math.floor(
+              (Math.random() + Math.floor(Math.random() * 9 + 1)) *
+                Math.pow(10, num - 1)
+            );
+          },
+          getCode: function(options) {
+            var that = this;
+            var currentTime = that.currentTime;
+            interval = setInterval(function() {
+              currentTime--;
+              that.codevalue = "重新获取" + currentTime;
+              that.disabled = false;
+              if (currentTime <= 0) {
+                clearInterval(interval);
+                that.codevalue = "重新获取";
+                that.disabled = true;
+              }
+            }, 1000);
+          },
+          openOnload() {
+            MINT.Indicator.open();
+          },
+          closeOload() {
+            MINT.Indicator.close();
+          },
+          getcodebtn: function() {
+            //获取滑动图片
+            var that = this;
+            that.openOnload();
+            if (/^1[0-9]{10}$/.test(this.phoneNum)) {
+              $("#gorightimg").css("left", 0);
+              $("#targetimgs").css("left", 0);
+              this.popupSlid = true;
+              $(".popUpBack").css({
+                "z-index": Number($(".loginBox").css("z-index")) + 1
+              });
+
+              $.ajax({
+                type: "POST",
+                url: https + "/web/CheckCode/getCodeImg",
+                data: { phoneNo: that.phoneNum },
+                // dataType:"json",
+                success: function(data) {
+                  that.closeOload();
+                  var objson = JSON.parse(data);
+                  $("#targetimgs").attr("src", objson.target);
+                  that.localtoken = objson.token;
+                  var getWidth = $("#sliderpopup").width();
+                  var slideWidth = (getWidth / 600) * 80;
+                  var topHeight = (getWidth / 600) * objson.y;
+                  $("#cutoutimg")
+                    .attr("src", objson.cutout)
+                    .css({
+                      width: slideWidth + "px",
+                      heigh: slideWidth + "px"
+                    });
+                  $("#imgshows").css("top", topHeight);
+                  $("#sliderpopup").show();
+                  $("#imgshows").show();
+                }
+              });
+            } else {
+              $("#sliderpopup").hide();
+              (this.popup = true),
+                $(".popUpBack").css({
+                  "z-index": Number($(".loginBox").css("z-index")) + 1
+                });
+              this.popuptext = "请输入正确的手机号";
+            }
+          },
+          //触摸开始事件
+          touchStart(event) {
+            var touch = event.targetTouches[0];
+            this.startX = touch.pageX;
+            $("#slidetext").hide();
+          },
+          //触摸移动事件
+          touchMove(event) {
+            if (event.targetTouches.length == 1) {
+              event.preventDefault(); // 阻止浏览器默认事件，重要
+              var touch = event.targetTouches[0];
+              $("#imgshows").css("left", touch.pageX - this.startX + "px");
+              $("#gorightimg").css("left", touch.pageX - this.startX + "px");
+              var chaju = touch.pageX - this.startX;
+              var getWides = $("#sliderpopup").width();
+              this.toLefts = (parseFloat(chaju) / parseFloat(getWides)) * 600;
+              console.log(this.toLefts);
+            }
+          },
+          //触摸结束事件
+          touchEnd: function(ev) {
+            let that = this;
+            // that.getCode();
+            $("#sliderpopup").hide();
+            that.sendCode();
+          },
+          sendCode: function() {
+            //发送短信验证码
+            this.getRandom(10);
+            let that = this;
+            $.ajax({
+              type: "POST",
+              url: https + "/web/LoginService/cbSendCode",
+              data: {
+                phoneNo: that.phoneNum,
+                token: that.localtoken,
+                x: Math.floor(this.toLefts)
+              },
+              // dataType:"json",
+              success: function(data) {
+                console.log(data, 33);
+                var getcode = JSON.parse(data);
+                if (getcode.error_code == "1") {
+                  that.popupSlid = false;
+                  $(".popUpBack").css({
+                    "z-index": Number($(".loginBox").css("z-index")) - 1
+                  });
+                  that.getCode();
+                } else {
+                  that.popup = true;
+                  $(".popUpBack").css({
+                    "z-index":
+                      Number(
+                        $("#sliderpopup")
+                          .parent()
+                          .css("z-index")
+                      ) + 1
+                  });
+                  that.popuptext = getcode.result;
+                  that.popupSlid = false;
+                }
+              }
+            });
+          },
+          loginto: function() {
+            //登录
+            console.log(1);
+
+            console.log(this.phoneNum, this.codeNum, this.localtoken);
+            var parasing = {
+              jsonStr:
+                "{'phoneNo':'" +
+                this.phoneNum +
+                "', 'code':'" +
+                this.codeNum +
+                "','token':'" +
+                this.localtoken +
+                "'}"
+              // jsonStr: "{'phoneNo':'" + '18701177047' + "', 'code':'" + '974631' + "','token':'" + 'c9ceb801-69aa-45b0-a987-ef35cf1f6638' + "'}"
+            };
+            var that = this;
+            $.ajax({
+              //url: "http://192.168.11.201:8080/mysongErpAPI/LoginService/cbLoginN",
+              url: https + "/web/LoginService/cbLoginN",
+              type: "post",
+              // dataType: "json", // 数据格式:JSON
+              data: {
+                jsonStr: parasing.jsonStr,
+                registSource: 115,
+                storeID: 0,
+                couponKey: "lucky"
+              },
+              success: function(data) {
+                var getData = JSON.parse(data);
+                console.log(getData);
+                if (getData.error_code == "1") {
+                  //消息成功的时候调取
+                  that.login_a = false;
+                  that.isGetTest = false;
+                  that.award = true;
+                  $(".popUpBack").css({
+                    "z-index": Number($(".loginBox").css("z-index")) + 1
+                  });
+
+                  if (getData.result == "50元抵用券") {
+                    that.awardPic = "img/fivetySong.png";
+                  } else if (getData.result == "100元抵用券") {
+                    that.awardPic = "img/hangSong.png";
+                  } else if (getData.result == "1小时免唱券") {
+                    that.awardPic = "img/oneSong.png";
+                  } else {
+                    that.awardPic = "img/twoSong.png";
+                  }
+                  if (getData.result == "50元抵用劵") {
+                    that.awardPic = "img/fivetySong.png";
+                  }
+
+                  that.awardValue = getData.result;
+                  // alert(that.awardValue)
+                } else {
+                  // that.login_a = false;
+                  that.popup = true;
+                  $(".popUpBack").css({
+                    "z-index": Number($(".loginBox").css("z-index")) + 1
+                  });
+                  that.popuptext = getData.result;
+                  $(".over-img").css({
+                    "z-index": Number($(".loginBox").css("z-index"))
+                  });
+                }
+              }
+            });
+          },
+          getUrlParam: function(key) {
+            //根据url 的key获取上面的参数
+            var url = location.href.replace(/^[^?=]*\?/gi, "").split("#")[0];
+            var json = {};
+            url.replace(/(^|&)([^&=]+)=([^&]*)/g, function(a, b, key, value) {
+              try {
+                key = decodeURIComponent(key);
+              } catch (e) {}
+
+              try {
+                value = decodeURIComponent(value);
+              } catch (e) {}
+
+              if (!(key in json)) {
+                json[key] = /\[\]$/.test(key) ? [value] : value;
+              } else if (json[key] instanceof Array) {
+                json[key].push(value);
+              } else {
+                json[key] = [json[key], value];
+              }
+            });
+            return key ? json[key] : json;
+          }
+        },
+        mounted() {
+          // this.getMtac();
+        }
+      });
+      var _mtac = {};
+      (function() {
+        var mta = document.createElement("script");
+        mta.src = "//pingjs.qq.com/h5/stats.js?v2.0.4";
+        mta.setAttribute("name", "MTAH5");
+        mta.setAttribute("sid", "500663619");
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(mta, s);
+      })();
+    </script>
+  </body>
+</html>
